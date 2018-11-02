@@ -14,71 +14,8 @@ define('FOOTER',[
     'Status' => 'https://xll.li',
 ]);
 define('COPYRIGHT',"XiaoLin");
-define('UPTIMEROBOT_API_KEY',"232323-dnfwuhr8937hr89ehre");
 
-if (file_exists(__DIR__ . '/data.json'))
-    if (filemtime(__DIR__ . '/data.json') > (time() - 180))
-    {
-        $list = json_decode(file_get_contents(__DIR__ . '/data.json'),true);
-        goto format;
-    }
-
-$times = '';
-for ($i = 1;$i <= 44;$i++) $times .= $i . '-';
-$curl = curl_init();
-curl_setopt_array($curl, array(
-    CURLOPT_URL => "https://api.uptimerobot.com/v2/getMonitors",
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_ENCODING => "",
-    CURLOPT_MAXREDIRS => 10,
-    CURLOPT_TIMEOUT => 30,
-    CURLOPT_SSL_VERIFYPEER => 0,
-    CURLOPT_SSL_VERIFYHOST => 0,
-    CURLOPT_CUSTOMREQUEST => "POST",
-    CURLOPT_POSTFIELDS => "api_key=" . urlencode(UPTIMEROBOT_API_KEY) . "&format=json&custom_uptime_ranges=" . strtotime('today') . '_' . time() . "&all_time_uptime_ratio=1&custom_uptime_ratios=" . urlencode(substr($times,0,-1)),
-    CURLOPT_HTTPHEADER => array(
-        "cache-control: no-cache",
-        "content-type: application/x-www-form-urlencoded"
-    ),
-));
-$response = json_decode(curl_exec($curl),true);
-if (curl_error($curl) || !is_array($response) || $response['stat'] != 'ok')
-{
-    header("HTTP/1.1 500 Internal Server Error");
-    die;
-}
-curl_close($curl);
-
-$list = [];
-foreach ($response['monitors'] as $value)
-{
-    $tmp = explode('/',$value['friendly_name']);
-    if (count($tmp) != 3) continue;
-    $ratios = explode('-',$value['custom_uptime_ratio']);
-    $ratios[] = $value['custom_uptime_ranges'];
-    if (isset($list[$tmp[2]])) $list[$tmp[2]]['items'][] = [
-        'name' => $tmp[0],
-        'status' => ($value['status'] == 2) ? "Up" : (($value['status'] == 0) ? "Pause" : (($value['status'] == 1) ? "Not checked yet" : "Down")),
-        'ratios' => $ratios,
-        'all_ratio' => $value['all_time_uptime_ratio'],
-    ];
-
-    if (!isset($list[$tmp[2]])) $list[$tmp[2]] = [
-        'name' => $tmp[1],
-        'items' => [
-            [
-                'name' => $tmp[0],
-                'status' => ($value['status'] == 2) ? "Up" : (($value['status'] == 0) ? "Pause" : (($value['status'] == 1) ? "Not checked yet" : "Down")),
-                'ratios' => $ratios,
-                'all_ratio' => $value['all_time_uptime_ratio'],
-            ],
-        ],
-    ];
-}
-
-file_put_contents(__DIR__ . '/data.json',json_encode($list));
-unset($tmp);
-format:
+$list = json_decode(file_get_contents(__DIR__ . '/data.json'),true);
 ?>
 
 <!DOCTYPE html>
@@ -90,6 +27,12 @@ format:
     <link rel="icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAAAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAQAQAAAAAAAAAAAAAAAAAAAAAAAD///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wEtLS2XKysr7SgoKO0nJyftJSUl7SMjI+kiIiKTIiIikSIiIukiIiLtIiIi7SIiIu0iIiLtIiIin////wEyMjI1MDAw/y0tLf8rKyv/KSkp/ycnJ/8mJiaP////Af///wEiIiKFIiIi/yIiIv8iIiL/IiIi/yIiIv8iIiI9NTU1kTMzM/8wMDD/Li4u/ywsLP8qKir/KCgoYf///wH///8BIyMjWSIiIv8iIiL/IiIi/yIiIv8iIiL/IiIimzg4OM01NTX9MzMz5TExMf8uLi7/LCws/yoqKtcpKSk7JycnCyUlJdMjIyP/IiIi/yIiIv8iIiLnIiIi/SIiItM7OzvzOTk5hzY2NgU0NDS5MjIy/y8vL/8tLS3/Kysr+SkpKScnJyfNJSUl/yQkJP8iIiLBIiIiByIiIn0iIiL1Pj4+7Tw8PKU6Ojo1Nzc3zTU1Nf8yMjL/MDAw/y4uLv8rKytZKSkpfSgoKP8mJib/JCQk1SMjIzUiIiKdIiIi70FBQcU/Pz//PDw8/zo6Ov84ODj/NTU1/zMzM/8wMDD/Li4unywsLDsqKir/KCgo/yYmJv8lJSX/IyMj/yIiIs1DQ0OBQUFB/z8/P/89PT3vOjo66zg4OP82Njb/NDQ0/zExMd8vLy8fLS0t7SsrK/EpKSnvJycn/yUlJf8jIyOLRUVFIURERPVCQkL9QEBAKz09PRs7OzvxOTk5/zc3N/80NDT/MjIywzAwMO8tLS0nKysrIykpKfknJyf7JiYmKf///wFGRkZ1RERE/0NDQ19AQEBPPj4+9zw8PP85OTmxNzc3rTU1Nf8zMzP7MTExVy4uLlUsLCz/Kioqf////wH///8B////AUZGRpVFRUX/Q0ND/0FBQf8/Pz/3PT09Cf///wE4ODjxNjY2/zMzM/8xMTH/Li4unf///wH///8B////Af///wH///8BR0dHb0VFRelERET/QUFB/0BAQLE+Pj6tOzs7/zk5Of82NjbtNDQ0d////wH///8B////Af///wH///8B////Af///wFGRkYZRkZGcURERK9CQkLjQEBA5T4+PrE7OztzODg4Hf///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8BAAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//w==">
     <link rel="shortcut icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAAAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAQAQAAAAAAAAAAAAAAAAAAAAAAAD///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wEtLS2XKysr7SgoKO0nJyftJSUl7SMjI+kiIiKTIiIikSIiIukiIiLtIiIi7SIiIu0iIiLtIiIin////wEyMjI1MDAw/y0tLf8rKyv/KSkp/ycnJ/8mJiaP////Af///wEiIiKFIiIi/yIiIv8iIiL/IiIi/yIiIv8iIiI9NTU1kTMzM/8wMDD/Li4u/ywsLP8qKir/KCgoYf///wH///8BIyMjWSIiIv8iIiL/IiIi/yIiIv8iIiL/IiIimzg4OM01NTX9MzMz5TExMf8uLi7/LCws/yoqKtcpKSk7JycnCyUlJdMjIyP/IiIi/yIiIv8iIiLnIiIi/SIiItM7OzvzOTk5hzY2NgU0NDS5MjIy/y8vL/8tLS3/Kysr+SkpKScnJyfNJSUl/yQkJP8iIiLBIiIiByIiIn0iIiL1Pj4+7Tw8PKU6Ojo1Nzc3zTU1Nf8yMjL/MDAw/y4uLv8rKytZKSkpfSgoKP8mJib/JCQk1SMjIzUiIiKdIiIi70FBQcU/Pz//PDw8/zo6Ov84ODj/NTU1/zMzM/8wMDD/Li4unywsLDsqKir/KCgo/yYmJv8lJSX/IyMj/yIiIs1DQ0OBQUFB/z8/P/89PT3vOjo66zg4OP82Njb/NDQ0/zExMd8vLy8fLS0t7SsrK/EpKSnvJycn/yUlJf8jIyOLRUVFIURERPVCQkL9QEBAKz09PRs7OzvxOTk5/zc3N/80NDT/MjIywzAwMO8tLS0nKysrIykpKfknJyf7JiYmKf///wFGRkZ1RERE/0NDQ19AQEBPPj4+9zw8PP85OTmxNzc3rTU1Nf8zMzP7MTExVy4uLlUsLCz/Kioqf////wH///8B////AUZGRpVFRUX/Q0ND/0FBQf8/Pz/3PT09Cf///wE4ODjxNjY2/zMzM/8xMTH/Li4unf///wH///8B////Af///wH///8BR0dHb0VFRelERET/QUFB/0BAQLE+Pj6tOzs7/zk5Of82NjbtNDQ0d////wH///8B////Af///wH///8B////Af///wFGRkYZRkZGcURERK9CQkLjQEBA5T4+PrE7OztzODg4Hf///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8B////Af///wH///8BAAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//w==">
     <link rel="stylesheet" href="app.css">
+    <style>
+        p {
+            margin-block-end: unset;
+            margin-block-start: unset;
+        }
+    </style>
 </head>
 <body>
 <div id="app">
@@ -151,34 +94,67 @@ format:
 
             foreach ($value['items'] as $item)
             {
-                $icon = 'up';
-                switch ($item['status'])
+                switch ($item['type'])
                 {
-                    case 'Up':
+                    case "uptime":
                         $icon = 'up';
+                        switch ($item['status'])
+                        {
+                            case 'Up':
+                                $icon = 'up';
+                                break;
+                            case 'Down':
+                                $icon = 'down';
+                                break;
+                            case 'Paused':
+                            case 'Not checked yet':
+                                $icon = 'pause';
+                                break;
+                        }
+                        echo '<div class="monitor"><div class="monitor-header"><div class="monitor-name">' .
+                            $item['name'] .
+                            '</div><div class="icon icon-status ' . $icon . '" title="' . $item['status'] . '"></div></div><div class="monitor-content"><div class="monitor-uptime-range"><strong>' .
+                            (float)$item['all_ratio'] .
+                            '%</strong><span> uptime for the last 45 days.</span></div><div class="monitor-uptimes">';
+
+                        foreach (array_reverse($item['ratios']) as $days => $tmp)
+                        {
+                            $icon = ((float)$tmp > 99.500) ? "up" : (((float)$tmp > 90.000) ? "seem-down" : (((float)$tmp > 65.000) ? "down" : "down"));
+                            $time = date('M jS, Y',time() - ((44 - $days) * 3600 * 24));
+                            echo '<div class="icon-uptime ' . $icon . '" title="&lt;small&gt;' . $time . '&lt;br&gt;' . $tmp . '%&lt;/small&gt;"></div>';
+                        }
+
+                        echo '</div></div></div>';
                         break;
-                    case 'Down':
-                        $icon = 'down';
-                        break;
-                    case 'Paused':
-                    case 'Not checked yet':
-                        $icon = 'pause';
+
+                    case "ssl":
+                        $icon = 'up';
+                        switch ($item['status'])
+                        {
+                            case 'Up':
+                                $icon = 'up';
+                                break;
+                            case 'Down':
+                                $icon = 'down';
+                                break;
+                        }
+                        echo '<div class="monitor"><div class="monitor-header"><div class="monitor-name">' .
+                            $item['name'] .
+                            '</div><div class="icon icon-status ' . $icon . '" title="' . $item['status'] . '"></div></div><div class="monitor-content"><div class="monitor-uptime-range">';
+
+                        unset($item['name'],$item['isValid'],$item['status'],$item['type']);
+                        $num = 0;
+                        foreach ($item as $key => $temp)
+                        {
+                            echo "<p>{$key}: <strong>{$temp}</strong></p>";
+                            if ($num < (count($item) - 1)) echo "<br>";
+                            $num++;
+                        }
+
+
+                        echo '</div></div></div>';
                         break;
                 }
-                echo '<div class="monitor"><div class="monitor-header"><div class="monitor-name">' .
-                    $item['name'] .
-                    '</div><div class="icon icon-status ' . $icon . '" title="' . $item['status'] . '"></div></div><div class="monitor-content"><div class="monitor-uptime-range"><strong>' .
-                    (float)$item['all_ratio'] .
-                    '%</strong><span> uptime for the last 45 days.</span></div><div class="monitor-uptimes">';
-
-                foreach (array_reverse($item['ratios']) as $days => $tmp)
-                {
-                    $icon = ((float)$tmp > 99.500) ? "up" : (((float)$tmp > 90.000) ? "seem-down" : (((float)$tmp > 65.000) ? "down" : "down"));
-                    $time = date('M jS, Y',time() - ((44 - $days) * 3600 * 24));
-                    echo '<div class="icon-uptime ' . $icon . '" title="&lt;small&gt;' . $time . '&lt;br&gt;' . $tmp . '%&lt;/small&gt;"></div>';
-                }
-
-                echo '</div></div></div>';
             }
             echo '</div></div></div></div>';
         }

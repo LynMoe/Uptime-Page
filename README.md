@@ -7,7 +7,9 @@ UpTimeRobot 平台的又一款新皮肤 (误
 
 ## 使用方法
 
-上传 ```index.php``` 与 ```app.css``` 至服务器, 更改其中的信息即可
+本项目依靠 UpTimeRobot 进行缓存刷新, 请设置监控URL为 ```https://xx.xx/update.php```
+
+上传 ```index.php``` 、 ```update.php``` 与 ```app.css``` 至服务器, 更改其中的信息即可
 + 请确保对文件同级目录有读取与写入权限
 
 ## Demo
