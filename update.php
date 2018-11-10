@@ -1,7 +1,6 @@
 <?php
 /**
  * Created by PhpStorm.
-<<<<<<< HEAD
  * User: XiaoLin
  * Date: 2018-11-10
  * Time: 12:43 PM
@@ -14,17 +13,6 @@ else
     header("HTTP/1.1 500 Internal Server Error");
     die;
 }
-=======
- * User: xiaolin
- * Date: 2018/11/2
- * Time: 下午4:03
- */
-
-define('UPTIMEROBOT_API_KEY',"u34284738-fjwieuydyr4d");
-define('SSL_CHECKER',false);
-define('SSL_CHECKER_DATA',"https://api.xxx.xx/xxxx/data.json");
-
->>>>>>> 8bb7e3b47167a6f2aeaa2634258949ebb3958cbc
 
 $times = '';
 for ($i = 1;$i <= 44;$i++) $times .= $i . '-';
@@ -44,7 +32,6 @@ curl_setopt_array($curl, array(
         "content-type: application/x-www-form-urlencoded"
     ),
 ));
-<<<<<<< HEAD
 
 $response = json_decode(curl_exec($curl),true);
 $count = 0;
@@ -59,10 +46,6 @@ while((curl_error($curl) != "" || !is_array($response) || $response['stat'] != '
 unset($count);
 
 if (!is_array($response) || $response['stat'] != 'ok')
-=======
-$response = json_decode(curl_exec($curl),true);
-if (curl_error($curl) || !is_array($response) || $response['stat'] != 'ok')
->>>>>>> 8bb7e3b47167a6f2aeaa2634258949ebb3958cbc
 {
     header("HTTP/1.1 500 Internal Server Error");
     die;
@@ -121,7 +104,6 @@ if (SSL_CHECKER)
     }
 }
 
-<<<<<<< HEAD
 unset($tmp,$data,$item,$i,$sslStatus,$ssl,$temp,$count,$key);
 
 date_default_timezone_set('Asia/Shanghai');
@@ -296,7 +278,3 @@ ob_start();
 $data = ob_get_clean();
 
 file_put_contents(__DIR__ . '/index.html',$data);
-=======
-file_put_contents(__DIR__ . '/data.json',json_encode($list));
-unset($tmp);
->>>>>>> 8bb7e3b47167a6f2aeaa2634258949ebb3958cbc

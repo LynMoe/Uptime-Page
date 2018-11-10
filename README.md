@@ -8,13 +8,7 @@ UpTimeRobot 平台的又一款新皮肤 (误
 ## 使用方法
 
 <<<<<<< HEAD
-<<<<<<< HEAD
 上传 ```config.php``` ```update.php``` 与 ```app.css``` 至服务器, 更改```config.php```的信息即可
-=======
-本项目依靠 UpTimeRobot 进行缓存刷新, 请设置监控URL为 ```https://xx.xx/update.php```
-
-上传 ```index.php``` 、 ```update.php``` 与 ```app.css``` 至服务器, 更改其中的信息即可
->>>>>>> 8bb7e3b47167a6f2aeaa2634258949ebb3958cbc
 =======
 本项目依靠 UpTimeRobot 进行缓存刷新, 请设置监控URL为 ```https://xx.xx/update.php```
 
